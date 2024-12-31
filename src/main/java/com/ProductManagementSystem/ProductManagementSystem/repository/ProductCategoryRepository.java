@@ -13,4 +13,6 @@ public interface ProductCategoryRepository extends JpaRepository<ProductCategory
 
     boolean existsByNameAndStatusNot(String name, StatusEnum status);
 
+    boolean existsById(UUID id);
+
 }

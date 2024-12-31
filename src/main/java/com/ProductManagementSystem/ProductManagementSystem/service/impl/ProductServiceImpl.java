@@ -1,5 +1,6 @@
 package com.ProductManagementSystem.ProductManagementSystem.service.impl;
 
+import com.ProductManagementSystem.ProductManagementSystem.builder.ResponseBuilder;
 import com.ProductManagementSystem.ProductManagementSystem.entity.ProductEntity;
 import com.ProductManagementSystem.ProductManagementSystem.enums.StatusEnum;
 import com.ProductManagementSystem.ProductManagementSystem.exception.ProductException;
@@ -30,7 +31,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void save(ProductRequest request) throws ProductException {
 
-        productCategoryRepository.findById(request.getCategoryId()).orElseThrow( () -> new ProductException("CAT001", "Category for the id does not exist", HttpStatus.BAD_REQUEST));
+        if (!productCategoryRepository.existsById(request.getCategoryId())) {
+            throw new ProductException("CAT001", "Category for the id does not exist", HttpStatus.BAD_REQUEST);
+        }
         if (productRepository.existsByNameAndCategory_Id(request.getName(), request.getCategoryId())) {
             throw new ProductException("PRO000", "Product with the same name already already exists in this category", HttpStatus.BAD_REQUEST);
         }
@@ -42,13 +45,28 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Response update(ProductUpdateRequest request) throws ProductException {
-        productRepository.findById(request.getId()).orElseThrow(() -> new ProductException("PRO001", "Product with the id does not exist", HttpStatus.BAD_REQUEST) );
-        return null;
+        ProductEntity product = productRepository.findById(request.getId()).orElseThrow(() -> new ProductException("PRO001", "Product with the id does not exist", HttpStatus.BAD_REQUEST) );
+
+        if (!productCategoryRepository.existsById(request.getCategoryId())) {
+            throw new ProductException("CAT001", "Category for the id does not exist", HttpStatus.BAD_REQUEST);
+        }
+
+        if (productRepository.existsByNameAndCategory_Id(request.getName(), request.getCategoryId())) {
+            throw new ProductException("PRO000", "Product with the same name already already exists in this category", HttpStatus.BAD_REQUEST);
+        }
+
+        product = productMapper.toEntity(request, product);
+        productRepository.save(product);
+        return ResponseBuilder.buildSuccessResponse("Product updated successfully");
+
     }
 
     @Override
-    public Response delete(ProductRequest request) throws ProductException {
-        return null;
+    public Response delete(UUID id) throws ProductException {
+        ProductEntity product = productRepository.findById(id).orElseThrow(() -> new ProductException("PRO001", "Product with the id does not exist", HttpStatus.BAD_REQUEST) );
+        product.setStatus(StatusEnum.DELETED);
+        productRepository.save(product);
+        return ResponseBuilder.buildSuccessResponse("Product deleted successfully");
     }
 
     @Override

@@ -12,7 +12,7 @@ public interface ProductService {
 
     void save(ProductRequest request) throws ProductException;
     Response update(ProductUpdateRequest request) throws ProductException;
-    Response delete(ProductRequest request) throws ProductException;
+    Response delete(UUID id) throws ProductException;
     Response getAll(ProductSearchFilterPaginationRequest request);
     Response getById(UUID id) throws ProductException;
 

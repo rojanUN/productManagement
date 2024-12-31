@@ -11,4 +11,5 @@ public interface ProductRepository extends JpaRepository<ProductEntity, UUID> {
 
     boolean existsByNameAndCategory_Id(String name, UUID categoryId);
 
+    boolean existsByIdAndNameAndCategory_Id(UUID id, String name, UUID categoryId);
 }

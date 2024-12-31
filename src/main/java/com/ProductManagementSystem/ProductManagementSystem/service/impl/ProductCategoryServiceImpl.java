@@ -16,7 +16,6 @@ import com.ProductManagementSystem.ProductManagementSystem.service.ProductCatego
 import com.ProductManagementSystem.ProductManagementSystem.service.specification.ProductCategorySpecification;
 import com.ProductManagementSystem.ProductManagementSystem.utils.Helper;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
