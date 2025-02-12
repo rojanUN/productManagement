@@ -12,6 +12,7 @@ import com.ProductManagementSystem.ProductManagementSystem.payload.request.Produ
 import com.ProductManagementSystem.ProductManagementSystem.payload.response.DataPaginationResponse;
 import com.ProductManagementSystem.ProductManagementSystem.payload.response.ProductCategoryResponse;
 import com.ProductManagementSystem.ProductManagementSystem.repository.ProductCategoryRepository;
+import com.ProductManagementSystem.ProductManagementSystem.repository.ProductRepository;
 import com.ProductManagementSystem.ProductManagementSystem.service.ProductCategoryService;
 import com.ProductManagementSystem.ProductManagementSystem.service.specification.ProductCategorySpecification;
 import com.ProductManagementSystem.ProductManagementSystem.utils.Helper;
@@ -31,6 +32,7 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
     private final ProductCategoryRepository productCategoryRepository;
 
     private final ProductCategoryMapper productCategoryMapper;
+    private final ProductRepository productRepository;
 
     @Override
     public Response save(ProductCategoryRequest request) throws ProductException {
@@ -87,6 +89,14 @@ public class ProductCategoryServiceImpl implements ProductCategoryService {
         ProductCategoryEntity category = productCategoryRepository.findById(id).orElseThrow( () -> new ProductException("CAT001", "Category does not exist", HttpStatus.BAD_REQUEST));
         ProductCategoryResponse response = productCategoryMapper.entityToResponse(category);
         return ResponseBuilder.buildSuccessResponse(response);
+    }
+
+    @Override
+    public ProductCategoryResponse getCatById(UUID id) throws ProductException {
+        ProductCategoryEntity category = productCategoryRepository.findById(id).orElseThrow( () -> new ProductException("CAT001", "Category does not exist", HttpStatus.BAD_REQUEST));
+        ProductCategoryResponse response = productCategoryMapper.entityToResponse(category);
+        response.setProductCount(productRepository.countByCategory(category));
+        return response;
     }
 
 }

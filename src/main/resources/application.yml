@@ -1,6 +1,9 @@
 spring:
   application:
     name: PRODUCT-MGMT-SYSTEM
+  graphql:
+    graphiql:
+      enabled: true
   datasource:
     url: jdbc:postgresql://localhost:5432/product
     username: postgres
@@ -11,6 +14,5 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-
 server:
-  port: 8001
+  port: 8002
