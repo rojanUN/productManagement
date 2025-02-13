@@ -1,0 +1,27 @@
+type Query {
+    categoryById(id: ID): ProductCategoryResponse
+}
+
+type ProductCategoryResponse {
+    id: ID
+    name: String
+    description: String
+    status: StatusEnum
+    products: [ProductEntity]
+    productCount: Int
+}
+
+enum StatusEnum {
+    ACTIVE
+    INACTIVE
+}
+
+type ProductEntity {
+    id: ID
+    name: String
+    price: Float
+    description: String
+    status: StatusEnum
+    createdAt: String
+    version: Int
+}

@@ -1,6 +1,7 @@
 package com.ProductManagementSystem.ProductManagementSystem.builder;
 
 import com.ProductManagementSystem.ProductManagementSystem.model.Response;
+import com.ProductManagementSystem.ProductManagementSystem.utils.ExceptionUtil;
 import lombok.Data;
 
 @Data
@@ -38,6 +39,7 @@ public class ResponseBuilder {
         response.setSuccess(Boolean.FALSE);
         response.setCode("000000");
         response.setMessage(exception.getMessage());
+        response.setData(ExceptionUtil.getStackTraceString(exception));
         return response;
 
     }

@@ -25,6 +25,7 @@ public class ProductException extends Exception {
     public ProductException(String code, String message, HttpStatus httpStatus) {
         super(message);
         this.code = code;
+        this.message = message;
         this.httpStatus = httpStatus;
     }
 
