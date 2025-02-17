@@ -29,4 +29,9 @@ public class ProductException extends Exception {
         this.httpStatus = httpStatus;
     }
 
+    public ProductException(Throwable throwable){
+        super(throwable);
+        this.message = throwable.getMessage();
+    }
+
 }
