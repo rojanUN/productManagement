@@ -29,7 +29,7 @@ public class SanctionController {
     }
 
     @PostMapping("/pfa-list")
-    public ResponseEntity<PfaRequest> uploadPfaList(@RequestParam("file") MultipartFile file) throws ProductException, JAXBException {
+    public ResponseEntity<?> uploadPfaList(@RequestParam("file") MultipartFile file) throws ProductException, JAXBException {
         return ResponseEntity.ok(uploaderService.uploadAndMapXml(file));
     }
 }

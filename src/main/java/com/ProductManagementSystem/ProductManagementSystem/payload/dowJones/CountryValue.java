@@ -10,7 +10,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CountryValue {
-
     @XmlAttribute(name = "Code")
     private String code;
 }
