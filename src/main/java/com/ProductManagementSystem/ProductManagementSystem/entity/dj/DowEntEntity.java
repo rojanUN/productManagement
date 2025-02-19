@@ -22,7 +22,13 @@ public class DowEntEntity extends AbstractBaseEntity {
 
     private String date;
 
-//    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<DateDetailEntity> dateDetails;
+    @OneToMany(mappedBy = "entity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DateDetailEntity> dateDetails;
+
+    @OneToMany(mappedBy = "entity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CompanyDetailEntity> companyDetails;
+
+    @OneToMany(mappedBy = "entity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<IdNumberTypeEntity> idNumberTypes;
 
 }

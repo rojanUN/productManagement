@@ -1,33 +1,30 @@
 package com.ProductManagementSystem.ProductManagementSystem.entity.dj;
 
 import com.ProductManagementSystem.ProductManagementSystem.entity.AbstractBaseEntity;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
-@Entity(name = "dj_id_number_type")
+@Entity(name = "dj_company_detail")
 @Getter
 @Setter
-public class IdNumberTypeEntity extends AbstractBaseEntity {
+public class CompanyDetailEntity extends AbstractBaseEntity {
 
-    private String idType;
+    @Column(name = "address_line")
+    private String addressLine;
 
-    private String idNotes;
+    @Column(name = "address_city")
+    private String addressCity;
 
-    @ElementCollection
-    @CollectionTable(name = "dj_id_value")
-    @Column(name = "id_value")
-    private List<String> idValue;
+    @Column(name = "address_country")
+    private String addressCountry;
+
+    private String url;
 
     @ManyToOne
     @JoinColumn(name = "entity_id")
     private DowEntEntity entity;
-
 }

@@ -12,7 +12,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Entity
+@Entity(name = "dj_date_detail")
 @Getter
 @Setter
 public class DateDetailEntity extends AbstractBaseEntity {
@@ -21,12 +21,12 @@ public class DateDetailEntity extends AbstractBaseEntity {
     private String dateType;
 
     @ManyToOne
-    @JoinColumn(name = "person_id", nullable = false)
+    @JoinColumn(name = "person_id")
     private PersonEntity person;
 
-//    @ManyToOne
-//    @JoinColumn(name = "entity_id", nullable = false)
-//    private DowEntEntity entity;
+    @ManyToOne
+    @JoinColumn(name = "entity_id")
+    private DowEntEntity entity;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "date_detail_id")

@@ -7,6 +7,8 @@ import jakarta.xml.bind.annotation.XmlElement;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
@@ -19,6 +21,6 @@ public class IdNumberType {
     private String idNotes;
 
     @XmlElement(name = "IDValue")
-    private String idValue;
+    private List<String> idValue;
 
 }

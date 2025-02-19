@@ -6,7 +6,7 @@ import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
+@Entity(name = "dj_date_value")
 @Getter
 @Setter
 public class DateValueEntity extends AbstractBaseEntity {

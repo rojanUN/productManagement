@@ -2,21 +2,25 @@ package com.ProductManagementSystem.ProductManagementSystem.service;
 
 import com.ProductManagementSystem.ProductManagementSystem.PersonEntityMapper;
 import com.ProductManagementSystem.ProductManagementSystem.builder.ResponseBuilder;
+import com.ProductManagementSystem.ProductManagementSystem.entity.dj.CompanyDetailEntity;
 import com.ProductManagementSystem.ProductManagementSystem.entity.dj.CountryDetailEntity;
 import com.ProductManagementSystem.ProductManagementSystem.entity.dj.DateDetailEntity;
 import com.ProductManagementSystem.ProductManagementSystem.entity.dj.DateValueEntity;
 import com.ProductManagementSystem.ProductManagementSystem.entity.dj.DowEntEntity;
+import com.ProductManagementSystem.ProductManagementSystem.entity.dj.IdNumberTypeEntity;
 import com.ProductManagementSystem.ProductManagementSystem.entity.dj.NameDetailEntity;
 import com.ProductManagementSystem.ProductManagementSystem.entity.dj.NameValueEntity;
 import com.ProductManagementSystem.ProductManagementSystem.entity.dj.PersonEntity;
 import com.ProductManagementSystem.ProductManagementSystem.exception.ProductException;
 import com.ProductManagementSystem.ProductManagementSystem.mapper.DowEntEntityMapper;
 import com.ProductManagementSystem.ProductManagementSystem.model.Response;
+import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.CompanyDetail;
 import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.CountryDetail;
 import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.CountryValue;
 import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.Date;
 import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.DateValue;
 import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.Entity;
+import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.IdNumberType;
 import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.Name;
 import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.NameValue;
 import com.ProductManagementSystem.ProductManagementSystem.payload.dowJones.Person;
@@ -28,6 +32,7 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -58,7 +63,7 @@ public class UploaderService {
             try (InputStream inputStream = new ByteArrayInputStream(xmlBytes)) {
                 PfaRequest request = (PfaRequest) unmarshaller.unmarshal(inputStream);
                 saveXmlData(request);
-                return ResponseBuilder.buildSuccessResponse("Xml upload success");
+                return ResponseBuilder.buildSuccessResponse("Xml upload success", request);
             }
         } catch (IOException person) {
             throw new ProductException(person);
@@ -71,6 +76,7 @@ public class UploaderService {
 
         List<PersonEntity> personEntities = persons.stream().map(person -> {
                     PersonEntity personEntity = personEntityMapper.toEntity(person);
+
                     List<String> birthPlaceNames = Optional.ofNullable(person.getBirthPlace())
                             .orElse(List.of())
                             .stream()
@@ -92,7 +98,7 @@ public class UploaderService {
                     }
                     if (person.getCountryDetails() != null) {
                         List<CountryDetailEntity> countryDetailEntities = person.getCountryDetails().stream()
-                                .map(countryDto -> mapCountryToEntity(countryDto, personEntity))  // Assuming mapCountryToEntity handles the mapping
+                                .map(countryDto -> mapCountryToEntity(countryDto, personEntity))
                                 .toList();
                         personEntity.setCountryDetails(countryDetailEntities);
                     }
@@ -105,11 +111,63 @@ public class UploaderService {
         List<DowEntEntity> dowJonesEntities = entities.stream()
                 .map(e -> {
                     DowEntEntity dowEntEntity = dowEntEntityMapper.toEntity(e);
+
+                    if (e.getDateDetails() != null) {
+                        List<DateDetailEntity> dateDetailEntities = e.getDateDetails().stream()
+                                .map(date -> mapDateDetailToEntity(date, dowEntEntity))
+                                .toList();
+                        dowEntEntity.setDateDetails(dateDetailEntities);
+                    }
+
+                    if (e.getCompanyDetails() != null) {
+                        List<CompanyDetailEntity> companyDetailEntities = e.getCompanyDetails().stream()
+                                .map(dto -> mapToEntity(dto, dowEntEntity))
+                                .toList();
+                        dowEntEntity.setCompanyDetails(companyDetailEntities);
+                    }
+
+                    if (e.getIdNumberTypes() != null) {
+                        List<IdNumberTypeEntity> idNumberTypeEntities = e.getIdNumberTypes().stream()
+                                .map(idNumberType -> mapIdNumberTypeToEntity(idNumberType, dowEntEntity))
+                                .toList();
+                        dowEntEntity.setIdNumberTypes(idNumberTypeEntities);
+                    }
                     return dowEntEntity;
                 }).toList();
 
         dowEntEntityRepository.saveAll(dowJonesEntities);
         personRepository.saveAll(personEntities);
+    }
+
+    private IdNumberTypeEntity mapIdNumberTypeToEntity(IdNumberType idNumberType, DowEntEntity entity) {
+        IdNumberTypeEntity idNumberTypeEntity = new IdNumberTypeEntity();
+        idNumberTypeEntity.setIdType(idNumberType.getIdType());
+        idNumberTypeEntity.setIdNotes(idNumberType.getIdNotes());
+        idNumberTypeEntity.setIdValue(idNumberType.getIdValue());
+        idNumberTypeEntity.setIdNotes(idNumberType.getIdNotes());
+        idNumberTypeEntity.setEntity(entity);
+        return idNumberTypeEntity;
+    }
+
+    private CompanyDetailEntity mapToEntity(CompanyDetail dto, DowEntEntity dowEntEntity) {
+        CompanyDetailEntity companyDetailEntity = new CompanyDetailEntity();
+        companyDetailEntity.setEntity(dowEntEntity);
+        new ModelMapper().map(dto, companyDetailEntity);
+        return companyDetailEntity;
+    }
+
+    private DateDetailEntity mapDateDetailToEntity(Date date, DowEntEntity dowEntEntity) {
+        DateDetailEntity dateDetailEntity = new DateDetailEntity();
+        dateDetailEntity.setDateType(date.getDateType());
+        dateDetailEntity.setEntity(dowEntEntity);
+
+        if (date.getDateValues() != null) {
+            List<DateValueEntity> dateValueEntities = date.getDateValues().stream()
+                    .map(this::mapDateValueToEntity)
+                    .toList();
+            dateDetailEntity.setDateValues(dateValueEntities);
+        }
+        return dateDetailEntity;
     }
 
     private NameDetailEntity mapNameToEntity(Name nameDto, PersonEntity personEntity) {
